@@ -78,31 +78,6 @@ int tamanho_arquivo_fornecedor(FILE *arq) {
 }
 
 int tamanho_registro_fornecedor() { return sizeof(TForn); }
-void embaralhar_arquivo_fornecedor(FILE *arq, int total_records) {
-    if (total_records <= 1) return;
-    srand(time(NULL));
-
-    for (int i = 0; i < total_records - 1; i++) {
-        int j = i + rand() / (RAND_MAX / (total_records - i) + 1);
-
-        // Troca os registros nas posições i e j
-        fseek(arq, i * tamanho_registro_fornecedor(), SEEK_SET);
-        TForn *reg_i = le_fornecedor(arq);
-
-        fseek(arq, j * tamanho_registro_fornecedor(), SEEK_SET);
-        TForn *reg_j = le_fornecedor(arq);
-
-        fseek(arq, i * tamanho_registro_fornecedor(), SEEK_SET);
-        salva_fornecedor(reg_j, arq);
-
-        fseek(arq, j * tamanho_registro_fornecedor(), SEEK_SET);
-        salva_fornecedor(reg_i, arq);
-
-        free(reg_i);
-        free(reg_j);
-    }
-    fflush(arq);
-}
 
 void gerarBaseDesordenada_fornecedor(FILE *file, int numberRecords) {
   fseek(file, 0, SEEK_SET);

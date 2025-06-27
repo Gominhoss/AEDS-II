@@ -42,6 +42,4 @@ void gerarBaseDesordenada_funcionario(FILE* file, int numberRecords);
 
 void selection_sort_disco_funcionario(FILE *arq, int tam);
 
-void embaralhar_arquivo_funcionario(FILE *arq, int total_records);
-
 #endif //FUNCIONARIOS_FUNCIONARIO_H

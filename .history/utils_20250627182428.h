@@ -5,5 +5,4 @@
 #include <time.h>
 
 
-
 #endif // UTILS_H_INCLUDED

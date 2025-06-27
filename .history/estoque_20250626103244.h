@@ -44,6 +44,4 @@ void insertion_sort_disco_estoque(FILE *arq, int tam);
 
 void selection_sort_disco_estoque(FILE *arq, int tam);
 
-void embaralhar_arquivo_estoque(FILE *arq, int total_records);
-
 #endif

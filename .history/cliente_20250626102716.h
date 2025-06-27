@@ -43,6 +43,4 @@ void insertion_sort_disco_cliente(FILE *arq, int tam);
 
 void selection_sort_disco_cliente(FILE *arq, int tam);
 
-void embaralhar_arquivo_cliente(FILE *arq, int total_records);
-
 #endif // CLIENTE_H_INCLUDED

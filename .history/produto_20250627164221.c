@@ -66,32 +66,6 @@ int tamanho_arquivo_produto(FILE *arq) {
 
 int tamanho_registro_produto() { return sizeof(TProd); }
 
-void embaralhar_arquivo_produto(FILE *arq, int total_records) {
-    if (total_records <= 1) return;
-    srand(time(NULL));
-
-    for (int i = 0; i < total_records - 1; i++) {
-        int j = i + rand() / (RAND_MAX / (total_records - i) + 1);
-
-        // Troca os registros nas posições i e j
-        fseek(arq, i * tamanho_registro_produto(), SEEK_SET);
-        TProd *reg_i = le_produto(arq);
-
-        fseek(arq, j * tamanho_registro_produto(), SEEK_SET);
-        TProd *reg_j = le_produto(arq);
-
-        fseek(arq, i * tamanho_registro_produto(), SEEK_SET);
-        salva_produto(reg_j, arq);
-
-        fseek(arq, j * tamanho_registro_produto(), SEEK_SET);
-        salva_produto(reg_i, arq);
-
-        free(reg_i);
-        free(reg_j);
-    }
-    fflush(arq);
-}
-
 void gerarBaseDesordenada_produto(FILE *file, int numberRecords) {
   fseek(file, 0, SEEK_SET);
   for (int i = 0; i < numberRecords; i++) {

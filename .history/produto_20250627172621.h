@@ -40,6 +40,4 @@ void insertion_sort_disco_produto(FILE *arq, int tam);
 
 void selection_sort_disco_produto(FILE *arq, int tam);
 
-void embaralhar_arquivo_produto(FILE *arq, int total_records);
-
 #endif // PRODUTO_H_INCLUDED

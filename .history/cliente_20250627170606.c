@@ -5,7 +5,6 @@
 #include <string.h>
 #include <time.h>
 #include <windows.h>
-#include "utils.c"
 
 void imprime_cliente(TCliente *cliente) {
   printf("\n**********************************************");
@@ -83,32 +82,6 @@ int tamanho_arquivo_cliente(FILE *arq) {
 
 int tamanho_registro_cliente() { return sizeof(TCliente); }
 
-void embaralhar_arquivo_cliente(FILE *arq, int total_records) {
-    if (total_records <= 1) return;
-    srand(time(NULL));
-
-    for (int i = 0; i < total_records - 1; i++) {
-        int j = i + rand() / (RAND_MAX / (total_records - i) + 1);
-
-        // Troca os registros nas posições i e j
-        fseek(arq, i * tamanho_registro_cliente(), SEEK_SET);
-        TCliente *reg_i = le_cliente(arq);
-
-        fseek(arq, j * tamanho_registro_cliente(), SEEK_SET);
-        TCliente *reg_j = le_cliente(arq);
-
-        fseek(arq, i * tamanho_registro_cliente(), SEEK_SET);
-        salva_cliente(reg_j, arq);
-
-        fseek(arq, j * tamanho_registro_cliente(), SEEK_SET);
-        salva_cliente(reg_i, arq);
-
-        free(reg_i);
-        free(reg_j);
-    }
-    fflush(arq);
-}
-
 void gerarBaseDesordenada_cliente(FILE *file, int numberRecords) {
   fseek(file, 0, SEEK_SET);
   for (int i = 0; i < numberRecords; i++) {
@@ -125,19 +98,19 @@ void gerarBaseDesordenada_cliente(FILE *file, int numberRecords) {
   embaralhar_arquivo_cliente(file, numberRecords);
 }
 
-TCliente *busca_sequencial_cliente(int cod, FILE *arq) {
+TCliente *busca_sequencial_cliente(int cod, FILE *arq) { 
   LARGE_INTEGER frequency;
   LARGE_INTEGER start;
   LARGE_INTEGER end;
   double tempoTotal;
 
-  QueryPerformanceFrequency(&frequency);
+  QueryPerformanceFrequency(&frequency); 
 
   int comp = 0;
   int i = 0;
-
+  
   QueryPerformanceCounter(&start);
-
+  
   for (i = 0; i < tamanho_arquivo_cliente(arq); i++) {
     fseek(arq, i * tamanho_cliente(), SEEK_SET);
     TCliente *cli = le_cliente(arq);
@@ -163,7 +136,7 @@ TCliente *busca_binaria_cliente(int cod, FILE *arq, int tam) {
   LARGE_INTEGER end;
   double tempoTotal;
 
-  QueryPerformanceFrequency(&frequency);
+  QueryPerformanceFrequency(&frequency); 
   QueryPerformanceCounter(&start);
 
   while (left <= right) {

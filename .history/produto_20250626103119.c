@@ -66,44 +66,22 @@ int tamanho_arquivo_produto(FILE *arq) {
 
 int tamanho_registro_produto() { return sizeof(TProd); }
 
-void embaralhar_arquivo_produto(FILE *arq, int total_records) {
-    if (total_records <= 1) return;
-    srand(time(NULL));
-
-    for (int i = 0; i < total_records - 1; i++) {
-        int j = i + rand() / (RAND_MAX / (total_records - i) + 1);
-
-        // Troca os registros nas posições i e j
-        fseek(arq, i * tamanho_registro_produto(), SEEK_SET);
-        TProd *reg_i = le_produto(arq);
-
-        fseek(arq, j * tamanho_registro_produto(), SEEK_SET);
-        TProd *reg_j = le_produto(arq);
-
-        fseek(arq, i * tamanho_registro_produto(), SEEK_SET);
-        salva_produto(reg_j, arq);
-
-        fseek(arq, j * tamanho_registro_produto(), SEEK_SET);
-        salva_produto(reg_i, arq);
-
-        free(reg_i);
-        free(reg_j);
-    }
-    fflush(arq);
-}
-
 void gerarBaseDesordenada_produto(FILE *file, int numberRecords) {
-  fseek(file, 0, SEEK_SET);
+  int f[numberRecords];
   for (int i = 0; i < numberRecords; i++) {
-      TProd prod;
-      prod.cod = i + 1;
-      sprintf(prod.nome, "Produto %d", prod.cod);
-      // Corrigido para salvar valor como float/double, não string
-      sprintf(prod.valor, "%.2f", (2.5 * (i + 1))); 
-      salva_produto(&prod, file);
+    f[i] = i + 1;
   }
-  fflush(file);
-  embaralhar_arquivo_produto(file, numberRecords);
+  embaralhar(f, numberRecords);
+  fseek(file, 0, SEEK_SET);
+
+  for (int i = 0; i < numberRecords; i++) {
+    TProd prod;
+    prod.cod = f[i];
+    sprintf(prod.nome, "Produto %d", f[i]);
+    sprintf(prod.valor, "%.2f", (2.5 * (i + 1)));
+    fseek(file, (i)*tamanho_registro_produto(), SEEK_SET);
+    salva_produto(&prod, file);
+  }
 }
 
 TProd busca_sequencial_produto(int cod, FILE *arq) {

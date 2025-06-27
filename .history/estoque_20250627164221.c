@@ -74,32 +74,6 @@ int tamanho_arquivo_estoque(FILE *arq) {
 
 int tamanho_registro_estoque() { return sizeof(TEstoque); }
 
-void embaralhar_arquivo_estoque(FILE *arq, int total_records) {
-    if (total_records <= 1) return;
-    srand(time(NULL));
-
-    for (int i = 0; i < total_records - 1; i++) {
-        int j = i + rand() / (RAND_MAX / (total_records - i) + 1);
-
-        // Troca os registros nas posições i e j
-        fseek(arq, i * tamanho_registro_estoque(), SEEK_SET);
-        TEstoque *reg_i = le_estoque(arq);
-
-        fseek(arq, j * tamanho_registro_estoque(), SEEK_SET);
-        TEstoque *reg_j = le_estoque(arq);
-
-        fseek(arq, i * tamanho_registro_estoque(), SEEK_SET);
-        salva_estoque(reg_j, arq);
-
-        fseek(arq, j * tamanho_registro_estoque(), SEEK_SET);
-        salva_estoque(reg_i, arq);
-
-        free(reg_i);
-        free(reg_j);
-    }
-    fflush(arq);
-}
-
 void gerarBaseDesordenada_estoque(FILE *file, int numberRecords) {
   
     fseek(file, 0, SEEK_SET);

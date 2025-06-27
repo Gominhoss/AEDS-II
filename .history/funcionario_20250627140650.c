@@ -90,40 +90,6 @@ int tamanho_arquivo_funcionario(FILE *arq) {
 
 int tamanho_registro_funcionario() { return sizeof(TFunc); }
 
-void embaralhar_arquivo_funcionario(FILE *arq, int total_records) {
-    if (total_records <= 1) return;
-
-    // Garante que a semente do gerador aleatório é diferente a cada execução
-    srand(time(NULL));
-
-    // Itera do primeiro ao penúltimo registro
-    for (int i = 0; i < total_records - 1; i++) {
-        // 1. Escolhe um índice aleatório 'j' entre 'i' e o final do arquivo
-        int j = i + rand() / (RAND_MAX / (total_records - i) + 1);
-
-        // 2. Lê o registro da posição i
-        fseek(arq, i * tamanho_registro_funcionario(), SEEK_SET);
-        TFunc *reg_i = le_funcionario(arq);
-
-        // 3. Lê o registro da posição j
-        fseek(arq, j * tamanho_registro_funcionario(), SEEK_SET);
-        TFunc *reg_j = le_funcionario(arq);
-
-        // 4. Escreve o registro 'reg_j' na posição 'i'
-        fseek(arq, i * tamanho_registro_funcionario(), SEEK_SET);
-        salva_funcionario(reg_j, arq);
-
-        // 5. Escreve o registro 'reg_i' na posição 'j'
-        fseek(arq, j * tamanho_registro_funcionario(), SEEK_SET);
-        salva_funcionario(reg_i, arq);
-
-        // 6. Libera a memória alocada para os registros temporários
-        free(reg_i);
-        free(reg_j);
-    }
-    fflush(arq); // Garante que todas as escritas foram para o disco
-}
-
 void gerarBaseDesordenada_funcionario(FILE *file, int numberRecords) {  
   for (int i = 0; i < numberRecords; i++) {
         TFunc func;
@@ -135,7 +101,7 @@ void gerarBaseDesordenada_funcionario(FILE *file, int numberRecords) {
         salva_funcionario(&func, file);
   }
 
-  embaralhar_arquivo_funcionario(file, numberRecords);
+  embaralhar(file, numberRecords);
 }
 
 TFunc *busca_sequencial_funcionario(int cod, FILE *arq) {

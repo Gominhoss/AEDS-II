@@ -89,7 +89,6 @@ int tamanho_arquivo_funcionario(FILE *arq) {
 }
 
 int tamanho_registro_funcionario() { return sizeof(TFunc); }
-
 void embaralhar_arquivo_funcionario(FILE *arq, int total_records) {
     if (total_records <= 1) return;
 
@@ -123,6 +122,7 @@ void embaralhar_arquivo_funcionario(FILE *arq, int total_records) {
     }
     fflush(arq); // Garante que todas as escritas foram para o disco
 }
+
 
 void gerarBaseDesordenada_funcionario(FILE *file, int numberRecords) {  
   for (int i = 0; i < numberRecords; i++) {

@@ -4,6 +4,10 @@
 #include <stdarg.h>
 #include <time.h>
 
-void embaralhar(int *vet, size_t vetSize);
+void embaralhar_arquivo_produto(FILE *arq, int total_records);
+void embaralhar_arquivo_fornecedor(FILE *arq, int total_records);
+void embaralhar_arquivo_cliente(FILE *arq, int total_records);
+void embaralhar_arquivo_estoque(FILE *arq, int total_records);
+void embaralhar_arquivo_funcionario(FILE *arq, int total_records);
 
 #endif // UTILS_H_INCLUDED

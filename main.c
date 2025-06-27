@@ -1,4 +1,10 @@
 #include "entidades.h"
+#include "cliente.c"
+#include "estoque.c"
+#include "fornecedor.c"
+#include "funcionario.c"
+#include "produto.c"
+#include "utils.c"
 #include <stdio.h>
 #include <stdlib.h>
 

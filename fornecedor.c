@@ -80,21 +80,17 @@ int tamanho_arquivo_fornecedor(FILE *arq) {
 int tamanho_registro_fornecedor() { return sizeof(TForn); }
 
 void gerarBaseDesordenada_fornecedor(FILE *file, int numberRecords) {
-  int f[numberRecords];
-  for (int i = 0; i < numberRecords; i++) {
-    f[i] = i + 1;
-  }
-  embaralhar(f, numberRecords);
   fseek(file, 0, SEEK_SET);
-
   for (int i = 0; i < numberRecords; i++) {
-    TForn forn;
-    forn.cod = f[i];
-    sprintf(forn.nome, "Fornecedor %d", f[i]);
-    sprintf(forn.cnpj, "11.111.111/0001-11");
-    fseek(file, (i)*tamanho_registro_fornecedor(), SEEK_SET);
-    salva_fornecedor(&forn, file);
+      TForn forn;
+      forn.cod = i + 1;
+      sprintf(forn.nome, "Fornecedor %d", forn.cod);
+      sprintf(forn.cnpj, "11.111.111/0001-%02d", forn.cod % 100);
+      salva_fornecedor(&forn, file);
   }
+  fflush(file);
+
+  embaralhar_arquivo_fornecedor(file, numberRecords);
 }
 
 TForn busca_sequencial_fornecedor(int cod, FILE *arq) {
@@ -126,20 +122,20 @@ TForn busca_sequencial_fornecedor(int cod, FILE *arq) {
 
 TForn busca_binaria_fornecedor(int cod, FILE *arq, int tam) {
   int left = 0, right = tam - 1, comp = 0;
-  double tempoTotal = 0;
+  long tempoTotal = 0;
   TForn forn;
 
   rewind(arq);
-  clock_t inicio = clock();
+  time_t inicio = time(NULL);
 
   while (left <= right) {
     int middle = (left + right) / 2;
     fseek(arq, middle * tamanho_registro_fornecedor(), SEEK_SET);
     fread(&forn, sizeof(TForn), 1, arq);
     if (cod == forn.cod) {
-      clock_t fim = clock();
-      tempoTotal += (double)(fim - inicio) / CLOCKS_PER_SEC;
-      printf("\nTempo da busca sequencial = %f segundos\n", tempoTotal);
+      time_t fim = time(NULL);
+      tempoTotal = (long)(fim - inicio);
+      printf("\nTempo da busca sequencial = %ld segundos\n", tempoTotal);
       printf("\nComparacoes = %d\n", comp);
       return forn;
     } else if (forn.cod < cod) {

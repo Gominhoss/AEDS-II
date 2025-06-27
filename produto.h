@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "utils.h"
+#include "entidades.h"
 
 typedef struct Produto {
   int cod;

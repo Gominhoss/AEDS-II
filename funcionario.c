@@ -90,40 +90,33 @@ int tamanho_arquivo_funcionario(FILE *arq) {
 
 int tamanho_registro_funcionario() { return sizeof(TFunc); }
 
-void gerarBaseDesordenada_funcionario(FILE *file, int numberRecords) {
-  int f[numberRecords];
-
+void gerarBaseDesordenada_funcionario(FILE *file, int numberRecords) {  
   for (int i = 0; i < numberRecords; i++) {
-    f[i] = i+1;
+        TFunc func;
+        func.cod = i + 1;
+        sprintf(func.nome, "Funcionario %d", func.cod);
+        sprintf(func.cpf, "111.111.111-11");
+        sprintf(func.data_nascimento, "01/01/2000");
+        func.salario = 1000.2 * i;
+        salva_funcionario(&func, file);
   }
-  embaralhar(f, numberRecords);
-  fseek(file, 0, SEEK_SET);
 
-  for (int i = 0; i < numberRecords; i++) {
-    TFunc func;
-    func.cod = f[i];
-    sprintf(func.data_nascimento, "01/01/2000");
-    sprintf(func.cpf, "111.111.111-11");
-    sprintf(func.nome, "Funcionario %d", f[i+1]);
-    func.salario = 1000.2 * i;
-    fseek(file, (i)* tamanho_registro_funcionario(), SEEK_SET);
-    salva_funcionario(&func, file);
-  }
+  embaralhar_arquivo_funcionario(file, numberRecords);
 }
 
 TFunc *busca_sequencial_funcionario(int cod, FILE *arq) {
-  double tempoTotal = 0;
+  long tempoTotal = 0;
   int comp = 0;
   int i = 0;
 
-  clock_t inicio = clock();
+  time_t inicio = time(NULL);
   for (i = 0; i < tamanho_arquivo_funcionario(arq); i++) {
     fseek(arq, i * tamanho_funcionario(), SEEK_SET);
     TFunc *func = le_funcionario(arq);
     if (cod == func->cod) {
-      clock_t fim = clock();
-      tempoTotal += (double)(fim - inicio) / CLOCKS_PER_SEC;
-      printf("\nTempo da busca sequencial = %f segundos\n", tempoTotal);
+      time_t fim = time(NULL);
+      tempoTotal = (long)(fim - inicio);
+      printf("\nTempo da busca sequencial = %ld segundos\n", tempoTotal);
       printf("\nComparacoes = %d\n", comp);
       return func;
       break;
@@ -135,18 +128,18 @@ TFunc *busca_sequencial_funcionario(int cod, FILE *arq) {
 
 TFunc *busca_binaria_funcionario(int cod, FILE *arq, int tam) {
   int left = 0, right = tam - 1, comp = 0;
-  double tempoTotal = 0;
+  long tempoTotal = 0;
 
-  clock_t inicio = clock();
+  time_t inicio = time(NULL);
 
   while (left <= right) {
     int middle = (left + right) / 2;
     fseek(arq, middle * tamanho_registro_funcionario(), SEEK_SET);
     TFunc *func = le_funcionario(arq);
     if (cod == func->cod) {
-      clock_t fim = clock();
-      tempoTotal += (double)(fim - inicio) / CLOCKS_PER_SEC;
-      printf("\nTempo da busca sequencial = %f segundos\n", tempoTotal);
+      time_t fim = time(NULL);
+      tempoTotal = (long)(fim - inicio);
+      printf("\nTempo da busca sequencial = %ld segundos\n", tempoTotal);
       printf("\nComparacoes = %d\n", comp);
       return func;
     } else if (func->cod < cod) {

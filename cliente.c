@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <windows.h>
+#include "utils.c"
 
 void imprime_cliente(TCliente *cliente) {
   printf("\n**********************************************");
@@ -82,39 +84,40 @@ int tamanho_arquivo_cliente(FILE *arq) {
 int tamanho_registro_cliente() { return sizeof(TCliente); }
 
 void gerarBaseDesordenada_cliente(FILE *file, int numberRecords) {
-  int f[numberRecords];
-
-  for (int i = 0; i < numberRecords; i++) {
-    f[i] = i + 1;
-  }
-  embaralhar(f, numberRecords);
   fseek(file, 0, SEEK_SET);
-
   for (int i = 0; i < numberRecords; i++) {
-    TCliente cli;
-    cli.cod = f[i];
-    sprintf(cli.nome, "Cliente %d", f[i]);
-    sprintf(cli.cpf, "111.111.111-11");
-    sprintf(cli.data_nascimento, "01/01/2000");
-    sprintf(cli.contato, "cliente@email.com");
-    fseek(file, (i)*tamanho_registro_cliente(), SEEK_SET);
-    salva_cliente(&cli, file);
-    fflush(file);
+      TCliente cli;
+      cli.cod = i + 1;
+      sprintf(cli.nome, "Cliente %d", cli.cod);
+      sprintf(cli.cpf, "111.111.111-11");
+      sprintf(cli.data_nascimento, "01/01/2000");
+      sprintf(cli.contato, "cliente%d@email.com", cli.cod);
+      salva_cliente(&cli, file);
   }
+  fflush(file);
+
+  embaralhar_arquivo_cliente(file, numberRecords);
 }
 
 TCliente *busca_sequencial_cliente(int cod, FILE *arq) {
-  double tempoTotal = 0;
+  LARGE_INTEGER frequency;
+  LARGE_INTEGER start;
+  LARGE_INTEGER end;
+  double tempoTotal;
+
+  QueryPerformanceFrequency(&frequency);
+
   int comp = 0;
   int i = 0;
 
-  clock_t inicio = clock();
+  QueryPerformanceCounter(&start);
+
   for (i = 0; i < tamanho_arquivo_cliente(arq); i++) {
     fseek(arq, i * tamanho_cliente(), SEEK_SET);
     TCliente *cli = le_cliente(arq);
     if (cod == cli->cod) {
-      clock_t fim = clock();
-      tempoTotal += (double)(fim - inicio) / CLOCKS_PER_SEC;
+      QueryPerformanceCounter(&end); // Para a contagem
+      tempoTotal = (double) (end.QuadPart - start.QuadPart) / frequency.QuadPart;
       printf("\nTempo da busca sequencial = %f segundos\n", tempoTotal);
       printf("\nComparacoes = %d\n", comp);
       return cli;
@@ -129,17 +132,21 @@ TCliente *busca_sequencial_cliente(int cod, FILE *arq) {
 
 TCliente *busca_binaria_cliente(int cod, FILE *arq, int tam) {
   int left = 0, right = tam - 1, comp = 0;
-  double tempoTotal = 0;
+  LARGE_INTEGER frequency;
+  LARGE_INTEGER start;
+  LARGE_INTEGER end;
+  double tempoTotal;
 
-  clock_t inicio = clock();
+  QueryPerformanceFrequency(&frequency);
+  QueryPerformanceCounter(&start);
 
   while (left <= right) {
     int middle = (left + right) / 2;
     fseek(arq, middle * tamanho_registro_cliente(), SEEK_SET);
     TCliente *cli = le_cliente(arq);
     if (cod == cli->cod) {
-      clock_t fim = clock();
-      tempoTotal += (double)(fim - inicio) / CLOCKS_PER_SEC;
+      QueryPerformanceCounter(&end); // Para a contagem
+      tempoTotal = (double) (end.QuadPart - start.QuadPart) / frequency.QuadPart;
       printf("\nTempo da busca sequencial = %f segundos\n", tempoTotal);
       printf("\nComparacoes = %d\n", comp);
       return cli;

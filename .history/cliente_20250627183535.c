@@ -7,7 +7,6 @@
 #include <windows.h>
 #include "utils.c"
 
-
 void imprime_cliente(TCliente *cliente) {
   printf("\n**********************************************");
   printf("\nCliente de codigo ");

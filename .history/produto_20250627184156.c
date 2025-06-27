@@ -108,6 +108,7 @@ void gerarBaseDesordenada_produto(FILE *file, int numberRecords) {
 }
 
 TProd busca_sequencial_produto(int cod, FILE *arq) {
+  double tempoTotal = 0;
   int comp = 0;
   int i = 0;
   LARGE_INTEGER frequency;
@@ -139,6 +140,7 @@ TProd busca_sequencial_produto(int cod, FILE *arq) {
 
 TProd busca_binaria_produto(int cod, FILE *arq, int tam) {
   int left = 0, right = tam - 1, comp = 0;
+  double tempoTotal = 0;
   TProd prod;
 
   rewind(arq);

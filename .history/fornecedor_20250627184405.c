@@ -154,6 +154,7 @@ TForn busca_sequencial_fornecedor(int cod, FILE *arq) {
 
 TForn busca_binaria_fornecedor(int cod, FILE *arq, int tam) {
   int left = 0, right = tam - 1, comp = 0;
+  long tempoTotal = 0;
   TForn forn;
 
   rewind(arq);

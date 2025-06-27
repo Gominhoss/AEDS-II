@@ -140,6 +140,7 @@ void gerarBaseDesordenada_funcionario(FILE *file, int numberRecords) {
 }
 
 TFunc *busca_sequencial_funcionario(int cod, FILE *arq) {
+  long tempoTotal = 0;
   int comp = 0;
   int i = 0;
 
@@ -168,6 +169,7 @@ TFunc *busca_sequencial_funcionario(int cod, FILE *arq) {
 
 TFunc *busca_binaria_funcionario(int cod, FILE *arq, int tam) {
   int left = 0, right = tam - 1, comp = 0;
+  long tempoTotal = 0;
 
   LARGE_INTEGER frequency;
   LARGE_INTEGER start;

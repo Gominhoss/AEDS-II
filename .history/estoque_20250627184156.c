@@ -118,6 +118,7 @@ void gerarBaseDesordenada_estoque(FILE *file, int numberRecords) {
 }
 
 TEstoque busca_sequencial_estoque(int cod, FILE *arq) {
+  double tempoTotal = 0;
   int comp = 0;
   int i = 0;
   LARGE_INTEGER frequency;
@@ -150,6 +151,7 @@ TEstoque busca_sequencial_estoque(int cod, FILE *arq) {
 
 TEstoque busca_binaria_estoque(int cod, FILE *arq, int tam) {
   int left = 0, right = tam - 1, comp = 0;
+  double tempoTotal = 0;
   TEstoque estoque;
 
   rewind(arq);

@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <windows.h>
 
 void imprime_fornecedor(TForn *forn) {
   printf("\n**********************************************");
@@ -121,6 +120,7 @@ void gerarBaseDesordenada_fornecedor(FILE *file, int numberRecords) {
 }
 
 TForn busca_sequencial_fornecedor(int cod, FILE *arq) {
+  double tempoTotal = 0;
   int comp = 0;
   int i = 0;
   LARGE_INTEGER frequency;
@@ -154,6 +154,7 @@ TForn busca_sequencial_fornecedor(int cod, FILE *arq) {
 
 TForn busca_binaria_fornecedor(int cod, FILE *arq, int tam) {
   int left = 0, right = tam - 1, comp = 0;
+  long tempoTotal = 0;
   TForn forn;
 
   rewind(arq);

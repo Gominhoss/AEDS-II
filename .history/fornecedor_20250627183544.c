@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <windows.h>
 
 void imprime_fornecedor(TForn *forn) {
   printf("\n**********************************************");
@@ -121,23 +120,18 @@ void gerarBaseDesordenada_fornecedor(FILE *file, int numberRecords) {
 }
 
 TForn busca_sequencial_fornecedor(int cod, FILE *arq) {
+  double tempoTotal = 0;
   int comp = 0;
   int i = 0;
-  LARGE_INTEGER frequency;
-  LARGE_INTEGER start;
-  LARGE_INTEGER end;
-  double tempoTotal;
-
-  QueryPerformanceFrequency(&frequency);
-  QueryPerformanceCounter(&start);
+  clock_t inicio = clock();
 
   rewind(arq);
   TForn forn;
 
   while (fread(&forn, sizeof(TForn), 1, arq) == 1) {
     if (cod == forn.cod) {
-      QueryPerformanceCounter(&end); // Para a contagem
-      tempoTotal = (double) (end.QuadPart - start.QuadPart) / frequency.QuadPart;
+      clock_t fim = clock();
+      tempoTotal += (double)(fim - inicio) / CLOCKS_PER_SEC;
       printf("\nTempo da busca sequencial = %f segundos\n", tempoTotal);
       printf("\nComparacoes = %d\n", comp);
       return forn;
@@ -154,25 +148,20 @@ TForn busca_sequencial_fornecedor(int cod, FILE *arq) {
 
 TForn busca_binaria_fornecedor(int cod, FILE *arq, int tam) {
   int left = 0, right = tam - 1, comp = 0;
+  long tempoTotal = 0;
   TForn forn;
 
   rewind(arq);
-  LARGE_INTEGER frequency;
-  LARGE_INTEGER start;
-  LARGE_INTEGER end;
-  double tempoTotal;
-
-  QueryPerformanceFrequency(&frequency);
-  QueryPerformanceCounter(&start);
+  time_t inicio = time(NULL);
 
   while (left <= right) {
     int middle = (left + right) / 2;
     fseek(arq, middle * tamanho_registro_fornecedor(), SEEK_SET);
     fread(&forn, sizeof(TForn), 1, arq);
     if (cod == forn.cod) {
-      QueryPerformanceCounter(&end); // Para a contagem
-      tempoTotal = (double) (end.QuadPart - start.QuadPart) / frequency.QuadPart;
-      printf("\nTempo da busca sequencial = %f segundos\n", tempoTotal);
+      time_t fim = time(NULL);
+      tempoTotal = (long)(fim - inicio);
+      printf("\nTempo da busca sequencial = %ld segundos\n", tempoTotal);
       printf("\nComparacoes = %d\n", comp);
       return forn;
     } else if (forn.cod < cod) {

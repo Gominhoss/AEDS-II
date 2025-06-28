@@ -40,6 +40,4 @@ void insertion_sort_disco_fornecedor(FILE *arq, int tam);
 
 void selection_sort_disco_fornecedor(FILE *arq, int tam);
 
-void embaralhar_arquivo_fornecedor(FILE *arq, int total_records);
-
 #endif // FORNECEDOR_H_INCLUDED

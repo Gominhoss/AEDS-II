@@ -34,7 +34,9 @@ int tamanho_arquivo_estoque(FILE *arq);
 
 int tamanho_registro_estoque();
 
-void gerarBaseDesordenada_estoque(FILE *file, int numberRecords);
+void listar_estoques_abaixo_do_minimo(FILE *arq);
+
+void gerarBaseDesordenada_estoque(FILE *fileEstoque, FILE *fileProdutos);
 
 TEstoque busca_sequencial_estoque(int cod, FILE *arq);
 

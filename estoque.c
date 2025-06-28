@@ -1,4 +1,5 @@
 #include "estoque.h"
+#include "produto.h"
 #include <math.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -10,11 +11,12 @@ void imprime_estoque(TEstoque *estoque) {
   printf("\n*************** ESTOQUE *****************");
   printf("\nCODIGO: ");
   printf("%d", estoque->cod);
-  printf("\nATUAL: ");
-  printf("%d", estoque->atual);
   printf("\nCAPACIDADE: ");
+  printf("\n   - ATUAL: ");
+  printf("%d", estoque->atual);
+  printf("\n   - TOTAL: ");
   printf("%d", estoque->capacidade);
-  printf("\nMINIMO: ");
+  printf("\n   - MINIMA: ");
   printf("%d", estoque->min);
 }
 
@@ -101,21 +103,47 @@ void embaralhar_arquivo_estoque(FILE *arq, int total_records) {
     fflush(arq);
 }
 
-void gerarBaseDesordenada_estoque(FILE *file, int numberRecords) {
-  
-    fseek(file, 0, SEEK_SET);
-    for (int i = 0; i < numberRecords; i++) {
+void listar_estoques_abaixo_do_minimo(FILE *arq) {
+  rewind(arq);
+  TEstoque *est;
+
+  printf("\n-------- Estoques abaixo do minimo --------\n");
+
+  while ((est = le_estoque(arq)) != NULL) {
+    if (est->atual < est->min) {
+      imprime_estoque(est);
+    }
+    free(est);
+  }
+}
+
+void gerarBaseDesordenada_estoque(FILE *fileEstoque, FILE *fileProdutos) {
+    srand(time(NULL));
+
+    rewind(fileProdutos);
+    fseek(fileEstoque, 0, SEEK_SET);
+
+    TProd *prod;
+    while ((prod = le_produto(fileProdutos)) != NULL) {
         TEstoque estoque;
-        estoque.cod = i + 1;
-        estoque.atual = 50 + (i * 2);
+        estoque.cod = prod->cod;             // código do produto
+        estoque.atual = rand() % 501;        // estoque atual aleatório até 500
         estoque.capacidade = 500;
         estoque.min = 50;
-        salva_estoque(&estoque, file);
+
+        salva_estoque(&estoque, fileEstoque);
+
+        free(prod);
     }
-    fflush(file);
-    
-    embaralhar_arquivo_estoque(file, numberRecords);
+
+    fflush(fileEstoque);
+
+    fseek(fileEstoque, 0, SEEK_END);
+    int numRegistros = ftell(fileEstoque) / tamanho_registro_estoque();
+
+    embaralhar_arquivo_estoque(fileEstoque, numRegistros);
 }
+
 
 TEstoque busca_sequencial_estoque(int cod, FILE *arq) {
   int comp = 0;

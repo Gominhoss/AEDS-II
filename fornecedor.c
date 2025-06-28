@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <windows.h>
+#include "utils.h"
 
 void imprime_fornecedor(TForn *forn) {
   printf("\n**********************************************");
@@ -80,64 +80,37 @@ int tamanho_arquivo_fornecedor(FILE *arq) {
 
 int tamanho_registro_fornecedor() { return sizeof(TForn); }
 
-void embaralhar_arquivo_fornecedor(FILE *arq, int total_records) {
-    if (total_records <= 1) return;
-    srand(time(NULL));
-
-    for (int i = 0; i < total_records - 1; i++) {
-        int j = i + rand() / (RAND_MAX / (total_records - i) + 1);
-
-        // Troca os registros nas posições i e j
-        fseek(arq, i * tamanho_registro_fornecedor(), SEEK_SET);
-        TForn *reg_i = le_fornecedor(arq);
-
-        fseek(arq, j * tamanho_registro_fornecedor(), SEEK_SET);
-        TForn *reg_j = le_fornecedor(arq);
-
-        fseek(arq, i * tamanho_registro_fornecedor(), SEEK_SET);
-        salva_fornecedor(reg_j, arq);
-
-        fseek(arq, j * tamanho_registro_fornecedor(), SEEK_SET);
-        salva_fornecedor(reg_i, arq);
-
-        free(reg_i);
-        free(reg_j);
-    }
-    fflush(arq);
-}
-
 void gerarBaseDesordenada_fornecedor(FILE *file, int numberRecords) {
-  fseek(file, 0, SEEK_SET);
+  int f[numberRecords];
   for (int i = 0; i < numberRecords; i++) {
-      TForn forn;
-      forn.cod = i + 1;
-      sprintf(forn.nome, "Fornecedor %d", forn.cod);
-      sprintf(forn.cnpj, "11.111.111/0001-%02d", forn.cod % 100);
-      salva_fornecedor(&forn, file);
+    f[i] = i + 1;
   }
-  fflush(file);
+  embaralhar(f, numberRecords);
+  fseek(file, 0, SEEK_SET);
 
-  embaralhar_arquivo_fornecedor(file, numberRecords);
+  for (int i = 0; i < numberRecords; i++) {
+    TForn forn;
+    forn.cod = f[i];
+    sprintf(forn.nome, "Fornecedor %d", f[i]);
+    sprintf(forn.cnpj, "11.111.111/0001-11");
+    fseek(file, (i)*tamanho_registro_fornecedor(), SEEK_SET);
+    salva_fornecedor(&forn, file);
+  }
 }
 
 TForn busca_sequencial_fornecedor(int cod, FILE *arq) {
+  double tempoTotal = 0;
   int comp = 0;
   int i = 0;
-  LARGE_INTEGER frequency;
-  LARGE_INTEGER start;
-  LARGE_INTEGER end;
-  double tempoTotal;
-
-  QueryPerformanceFrequency(&frequency);
-  QueryPerformanceCounter(&start);
+  clock_t inicio = clock();
 
   rewind(arq);
   TForn forn;
 
   while (fread(&forn, sizeof(TForn), 1, arq) == 1) {
     if (cod == forn.cod) {
-      QueryPerformanceCounter(&end); // Para a contagem
-      tempoTotal = (double) (end.QuadPart - start.QuadPart) / frequency.QuadPart;
+      clock_t fim = clock();
+      tempoTotal += (double)(fim - inicio) / CLOCKS_PER_SEC;
       printf("\nTempo da busca sequencial = %f segundos\n", tempoTotal);
       printf("\nComparacoes = %d\n", comp);
       return forn;
@@ -154,24 +127,19 @@ TForn busca_sequencial_fornecedor(int cod, FILE *arq) {
 
 TForn busca_binaria_fornecedor(int cod, FILE *arq, int tam) {
   int left = 0, right = tam - 1, comp = 0;
+  double tempoTotal = 0;
   TForn forn;
 
   rewind(arq);
-  LARGE_INTEGER frequency;
-  LARGE_INTEGER start;
-  LARGE_INTEGER end;
-  double tempoTotal;
-
-  QueryPerformanceFrequency(&frequency);
-  QueryPerformanceCounter(&start);
+  clock_t inicio = clock();
 
   while (left <= right) {
     int middle = (left + right) / 2;
     fseek(arq, middle * tamanho_registro_fornecedor(), SEEK_SET);
     fread(&forn, sizeof(TForn), 1, arq);
     if (cod == forn.cod) {
-      QueryPerformanceCounter(&end); // Para a contagem
-      tempoTotal = (double) (end.QuadPart - start.QuadPart) / frequency.QuadPart;
+      clock_t fim = clock();
+      tempoTotal += (double)(fim - inicio) / CLOCKS_PER_SEC;
       printf("\nTempo da busca sequencial = %f segundos\n", tempoTotal);
       printf("\nComparacoes = %d\n", comp);
       return forn;

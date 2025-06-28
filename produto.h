@@ -12,11 +12,12 @@ typedef struct Produto {
   int cod;
   char nome[50];
   char valor[50];
+  int cod_forn;
 } TProd;
 
 void imprime_produto(TProd *prod);
 
-TProd *produto(int cod, char *nome, char *valor);
+TProd *produto(int cod, char *nome, char *valor, int cod_forn);
 
 void salva_produto(TProd *prod, FILE *out);
 

@@ -5,8 +5,6 @@
 #include <string.h>
 #include <time.h>
 #include <windows.h>
-#include "utils.c"
-
 
 void imprime_cliente(TCliente *cliente) {
   printf("\n**********************************************");

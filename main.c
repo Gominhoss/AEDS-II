@@ -26,6 +26,24 @@ void msg_MENU(char *tipo) {
   printf("RESPOSTA: ");
 }
 
+void msg_MENUP(char *tipo) {
+  printf("\n----------- PROGRAMA DE GERENCIAMENTO DE %s -----------\n", tipo);
+  printf("OBS.: Todas as informacoes serao armazenadas em "
+         "arquivos.\n\nOPERACOES DISPONIVEIS:\n");
+  printf("1 - Criar base\n2 - Ordenar\n3 - Imprimir\n4 - Pesquisar "
+         "(Sequencial)\n5 - Pesquisar (Binaria)\n6 - Listar produtos de um fornecedor\n7 - Sair\n");
+  printf("RESPOSTA: ");
+}
+
+void msg_MENUE(char *tipo) {
+  printf("\n----------- PROGRAMA DE GERENCIAMENTO DE %s -----------\n", tipo);
+  printf("OBS.: Todas as informacoes serao armazenadas em "
+         "arquivos.\n\nOPERACOES DISPONIVEIS:\n");
+  printf("1 - Criar base\n2 - Ordenar\n3 - Imprimir\n4 - Pesquisar "
+         "(Sequencial)\n5 - Pesquisar (Binaria)\n6 - Estoques abaixo do mInimo\n7 - Sair\n");
+  printf("RESPOSTA: ");
+}
+
 void menu_funcionario() {
   FILE *out;
   if ((out = fopen(FUNCIONARIOS_FILE, "w+b")) == NULL) {
@@ -170,7 +188,7 @@ void menu_fornecedor() {
     int escolha = -1;
     int cod;
 
-    while (escolha != 6) {
+    while (escolha != 7) {
       msg_MENU("FORNECEDORES");
       scanf("%d", &escolha);
       if (escolha == 1) {
@@ -237,8 +255,8 @@ void menu_produto() {
     int escolha = -1;
     int cod;
 
-    while (escolha != 6) {
-      msg_MENU("PRODUTO");
+    while (escolha != 7) {
+      msg_MENUP("PRODUTO");
       scanf("%d", &escolha);
       if (escolha == 1) {
         printf("\nInforme quantos registros tera a base: ");
@@ -285,6 +303,29 @@ void menu_produto() {
           imprime_produto(&prod);
         }
       } else if (escolha == 6) {
+        printf("\n\n-----------------------------Pesquisar produto por fornecedor "
+               "-----------------------");      
+        int cod_forn;
+        printf("\nInforme o codigo do fornecedor: ");
+        scanf("%d", &cod_forn);
+
+        FILE *arq_prod = fopen(PRODUTOS_FILE, "rb");
+        if (!arq_prod) {
+          printf("Erro ao abrir arquivo de produtos.\n");
+          continue;
+        }
+
+        printf("\nProdutos fornecidos pelo fornecedor %d:\n", cod_forn);
+
+        TProd *p;
+        while ((p = le_produto(arq_prod)) != NULL) {
+          if (p->cod_forn == cod_forn) {
+            imprime_produto(p);
+          }
+          free(p);
+        }
+        fclose(arq_prod);
+      } else if (escolha == 7) {
         system("cls");
         break;
       } else {
@@ -299,38 +340,42 @@ void menu_produto() {
 void menu_estoque() {
   FILE *out_cli;
   if ((out_cli = fopen(ESTOQUE_FILE, "w+b")) == NULL) {
-    printf("Erro ao abrir arquivo\n");
+    printf("Erro ao abrir arquivo de estoque\n");
     exit(1);
   } else {
     int escolha = -1;
     int cod;
 
-    while (escolha != 6) {
-      msg_MENU("ESTOQUE");
+    while (escolha != 7) {
+      msg_MENUE("ESTOQUE");
       scanf("%d", &escolha);
+
       if (escolha == 1) {
-        printf("\nInforme quantos registros tera a base: ");
-        int num;
-        scanf("%d", &num);
-        gerarBaseDesordenada_estoque(out_cli, num);
+        // gerando a base a partir do arquivo de produtos
+        FILE *produtos = fopen(PRODUTOS_FILE, "rb");
+        if (!produtos) {
+          printf("Erro ao abrir arquivo de produtos para gerar estoque\n");
+        } else {
+          gerarBaseDesordenada_estoque(out_cli, produtos);
+          fclose(produtos);
+          printf("Base de estoque gerada a partir dos produtos.\n");
+        }
+
       } else if (escolha == 2) {
         selection_sort_disco_estoque(out_cli, tamanho_arquivo_estoque(out_cli));
-        printf("\n-----------------------------Base "
-               "ordenada-----------------------");
+        printf("\n-----------------------------Base ordenada-----------------------\n");
         le_estoques(out_cli);
+
       } else if (escolha == 3) {
         le_estoques(out_cli);
 
       } else if (escolha == 4) {
         printf("\nInforme o codigo a ser buscado: ");
-
         scanf("%d", &cod);
 
-        printf("\n-----------------------------Busca "
-               "sequencial-----------------------");
+        printf("\n-----------------------------Busca sequencial-----------------------\n");
         TEstoque est = busca_sequencial_estoque(cod, out_cli);
         printf("\n");
-
         if (est.cod != cod) {
           printf("Nao foi possivel encontrar o codigo solicitado.\n");
         } else {
@@ -339,30 +384,32 @@ void menu_estoque() {
 
       } else if (escolha == 5) {
         printf("\nInforme o codigo a ser buscado: ");
-
         scanf("%d", &cod);
 
-        printf("\n\n-----------------------------Busca "
-               "binaria-----------------------");
-        TEstoque est = busca_binaria_estoque(cod, out_cli,
-                                             tamanho_arquivo_estoque(out_cli));
+        printf("\n-----------------------------Busca binaria-----------------------\n");
+        TEstoque est = busca_binaria_estoque(cod, out_cli, tamanho_arquivo_estoque(out_cli));
         printf("\n");
         if (est.cod != cod) {
           printf("Nao foi possivel encontrar o codigo solicitado.\n");
         } else {
           imprime_estoque(&est);
         }
+
       } else if (escolha == 6) {
+        listar_estoques_abaixo_do_minimo(out_cli);
+
+      } else if (escolha == 7) {
         system("cls");
         break;
+
       } else {
         printf("\nESCOLHA UMA OPCAO VALIDA!\n");
-        break;
       }
     }
     fclose(out_cli);
   }
 }
+
 
 int main(int argc, char **argv) {
   int option = -1;

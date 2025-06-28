@@ -14,15 +14,19 @@ void imprime_produto(TProd *prod) {
   printf("%s", prod->nome);
   printf("\nValor: R$");
   printf("%s", prod->valor);
+  printf("\nFornecedor: ");
+  printf("%d", prod->cod_forn);
   printf("\n**********************************************");
 }
-TProd *produto(int cod, char *nome, char *valor) {
+
+TProd *produto(int cod, char *nome, char *valor, int cod_forn) {
   TProd *prod = (TProd *)malloc(sizeof(TProd));
   if (prod)
     memset(prod, 0, sizeof(TProd));
   prod->cod = cod;
   strcpy(prod->nome, nome);
   strcpy(prod->valor, valor);
+  prod->cod_forn = cod_forn;
   return prod;
 }
 
@@ -30,7 +34,9 @@ void salva_produto(TProd *prod, FILE *out) {
   fwrite(&prod->cod, sizeof(int), 1, out);
   fwrite(prod->nome, sizeof(char), sizeof(prod->nome), out);
   fwrite(prod->valor, sizeof(char), sizeof(prod->valor), out);
+  fwrite(&prod->cod_forn, sizeof(int), 1, out); // << NOVO
 }
+
 
 TProd *le_produto(FILE *in) {
   TProd *prod = (TProd *)malloc(sizeof(TProd));
@@ -40,8 +46,10 @@ TProd *le_produto(FILE *in) {
   }
   fread(prod->nome, sizeof(char), sizeof(prod->nome), in);
   fread(prod->valor, sizeof(char), sizeof(prod->valor), in);
+  fread(&prod->cod_forn, sizeof(int), 1, in); // << NOVO
   return prod;
 }
+
 
 void le_produtos(FILE *in) {
   printf("\n\nLendo produtos do arquivo...\n\n");
@@ -55,8 +63,9 @@ void le_produtos(FILE *in) {
 
 int tamanho_produto() {
   return sizeof(int)           // cod
-         + (sizeof(char) * 50) // nome
-         + sizeof(char) * 50;  // valor
+         + sizeof(char) * 50   // nome
+         + sizeof(char) * 50   // valor
+         + sizeof(int);        // cod_forn << NOVO
 }
 
 int tamanho_arquivo_produto(FILE *arq) {
@@ -98,9 +107,12 @@ void gerarBaseDesordenada_produto(FILE *file, int numberRecords) {
   for (int i = 0; i < numberRecords; i++) {
       TProd prod;
       prod.cod = i + 1;
+      prod.cod_forn = (rand() % 50) + 1;
       sprintf(prod.nome, "Produto %d", prod.cod);
       // Corrigido para salvar valor como float/double, não string
       sprintf(prod.valor, "%.2f", (2.5 * (i + 1))); 
+      // sprintf(fornecedor_str, "Fornecedor %d", prod.cod_forn);
+
       salva_produto(&prod, file);
   }
   fflush(file);

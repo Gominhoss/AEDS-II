@@ -14,6 +14,16 @@ typedef struct Fornecedor {
   char cnpj[19];
 } TForn;
 
+typedef struct vetor_forn {
+  TForn *en;
+  FILE *f;
+  TParticao *particao;
+  int aux_p;
+  int read;
+
+} TVetForn;
+
+
 void imprime_fornecedor(TForn *forn);
 
 TForn *fornecedor(int cod, char *nome, char *cnpj);
@@ -41,5 +51,19 @@ void insertion_sort_disco_fornecedor(FILE *arq, int tam);
 void selection_sort_disco_fornecedor(FILE *arq, int tam);
 
 void embaralhar_arquivo_fornecedor(FILE *arq, int total_records);
+
+void classificacaoSubs_forn(FILE *arq);
+
+void imprime_cod_forn(FILE *in);
+
+void merge_fornecedores(TVetForn **arr, int l, int m, int r); 
+
+void intercalacao_fornecedores(char *nome_arquivo_saida, TNomes *nome_particoes); 
+
+void processa_particoes_fornecedores(TVetForn **v, TNomes *nome_particoes, int num_p, char *out); 
+
+void intercala_particoes_fornecedores(TVetForn *particao,TVetForn *particao2, TNomes *nome_particoes, int index);
+
+void mergeSort_fornecedores(TVetForn **arr, int l, int r);
 
 #endif // FORNECEDOR_H_INCLUDED

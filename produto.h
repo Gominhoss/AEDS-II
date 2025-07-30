@@ -14,6 +14,15 @@ typedef struct Produto {
   char valor[50];
 } TProd;
 
+typedef struct vetor_prod {
+  TProd *en;
+  FILE *f;
+  TParticao *particao;
+  int aux_p;
+  int read;
+
+} TVetProd;
+
 void imprime_produto(TProd *prod);
 
 TProd *produto(int cod, char *nome, char *valor);
@@ -41,5 +50,19 @@ void insertion_sort_disco_produto(FILE *arq, int tam);
 void selection_sort_disco_produto(FILE *arq, int tam);
 
 void embaralhar_arquivo_produto(FILE *arq, int total_records);
+
+void imprime_cod_prod(FILE *in);
+
+void classificacaoSubs_prod(FILE *arq);
+
+void intercala_particoes_produtos(TVetProd *particao,TVetProd *particao2, TNomes *nome_particoes, int index);
+
+void processa_particoes_produtos(TVetProd **v, TNomes *nome_particoes, int num_p, char *out);
+
+void mergeSort_produtos(TVetProd **arr, int l, int r);
+
+void merge_produtos(TVetProd **arr, int l, int m, int r);
+
+void intercalacao_produtos(char *nome_arquivo_saida, TNomes *nome_particoes);
 
 #endif // PRODUTO_H_INCLUDED

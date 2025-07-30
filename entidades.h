@@ -7,6 +7,7 @@
 #include "funcionario.h"
 #include "produto.h"
 #include "utils.h"
+#include "particoes.h"
 #include <stdio.h>
 #include <stdlib.h>
 

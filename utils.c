@@ -5,8 +5,3 @@
 #include <math.h>
 #include "entidades.h"
 #include "utils.h"
-
-
-
-
-

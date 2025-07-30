@@ -144,6 +144,7 @@ void menu_funcionario() {
         } else {
           mostrar_particoes(*conjunto_particoes);
           intercalacao_funcionarios("func_intercalado.dat", conjunto_particoes);
+          // intercala_teste_1("clientes_intercalado.dat", conjunto_particoes);
           flag = 1;
         }
 
@@ -255,6 +256,11 @@ void menu_cliente() {
 
       } else if (escolha == 6) {
         int num_particoes;
+        /*
+       printf("\nInsira a quantidade de registros nos subarquivos: ");
+       scanf("%d", &num_particoes);
+       classificacao_interna(out_cli, num_particoes);
+      */
         classificacaoSubs_cli(out_cli);
         conjunto_particoes = le_nomes_particoes_diretorio("particoesCli");
 
@@ -267,6 +273,7 @@ void menu_cliente() {
         } else {
           mostrar_particoes(*conjunto_particoes);
           intercalacao_clientes("clientes_intercalado.dat", conjunto_particoes);
+          // intercala_teste_1("clientes_intercalado.dat", conjunto_particoes);
           flag = 1;
         }
 
@@ -517,7 +524,7 @@ void menu_estoque() {
     int flag = 0;
 
   if ((out_cli = fopen(ESTOQUE_FILE, "w+b")) == NULL) {
-    printf("Erro ao abrir arquivo\n");
+    printf("Erro ao abrir arquivo de estoque\n");
     exit(1);
   } else {
     int escolha = -1;
@@ -528,6 +535,7 @@ void menu_estoque() {
     while (escolha != 8) {
       msg_MENU("ESTOQUE");
       scanf("%d", &escolha);
+
       if (escolha == 1) {
         // gerando a base a partir do arquivo de produtos
         FILE *produtos = fopen(PRODUTOS_FILE, "rb");
@@ -544,6 +552,7 @@ void menu_estoque() {
         printf("\n-----------------------------Base "
                "ordenada-----------------------");
         le_estoques(out_cli);
+
       } else if (escolha == 3) {
         if (flag) {
           if ((ordenado = fopen("estq_intercalado.dat", "r+")) == NULL) {
@@ -571,14 +580,11 @@ void menu_estoque() {
 
        else if (escolha == 4) {
         printf("\nInforme o codigo a ser buscado: ");
-
         scanf("%d", &cod);
 
-        printf("\n-----------------------------Busca "
-               "sequencial-----------------------");
+        printf("\n-----------------------------Busca sequencial-----------------------\n");
         TEstoque est = busca_sequencial_estoque(cod, out_cli);
         printf("\n");
-
         if (est.cod != cod) {
           printf("Nao foi possivel encontrar o codigo solicitado.\n");
         } else {
@@ -587,19 +593,17 @@ void menu_estoque() {
 
       } else if (escolha == 5) {
         printf("\nInforme o codigo a ser buscado: ");
-
         scanf("%d", &cod);
 
-        printf("\n\n-----------------------------Busca "
-               "binaria-----------------------");
-        TEstoque est = busca_binaria_estoque(cod, out_cli,
-                                             tamanho_arquivo_estoque(out_cli));
+        printf("\n-----------------------------Busca binaria-----------------------\n");
+        TEstoque est = busca_binaria_estoque(cod, out_cli, tamanho_arquivo_estoque(out_cli));
         printf("\n");
         if (est.cod != cod) {
           printf("Nao foi possivel encontrar o codigo solicitado.\n");
         } else {
           imprime_estoque(&est);
         }
+
       } else if (escolha == 6) {
         printf("Criando partições...");
         classificacaoSubs_estoq((out_cli));
@@ -624,7 +628,6 @@ void menu_estoque() {
 
       } else {
         printf("\nESCOLHA UMA OPCAO VALIDA!\n");
-        break;
       }
     }
     fclose(out_cli);

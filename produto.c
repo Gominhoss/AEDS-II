@@ -476,7 +476,7 @@ void intercalacao_produtos(char *nome_arquivo_saida, TNomes *nome_particoes) {
 
         printf("Leu entidade\n");
         if (c == NULL) { // indicativo do fim de clientes para leitura
-          v[i]-> en = produto(INT_MAX, " ", " ", INT_MAX);
+          v[i]-> en = produto(INT_MAX, " ", " ");
         } else {
           v[i]-> en = c;
         }
@@ -710,7 +710,7 @@ void intercala_particoes_produtos(TVetProd *particao, TVetProd *particao2, TNome
   for (i = 0; i < 10; i++) {
     p1[i] = le_produto(particao->f);
     if (p1[i] == NULL) {
-      p1[i] = produto(INT_MAX, "Produto NULL", " ", -1); // se não encontrado, define com INT_MAX o codigo
+      p1[i] = produto(INT_MAX, "Produto NULL", " "); // se não encontrado, define com INT_MAX o codigo
     }
     fseek(particao->f, i * tam_reg, SEEK_SET);
     particao->aux_p++;
@@ -719,7 +719,7 @@ void intercala_particoes_produtos(TVetProd *particao, TVetProd *particao2, TNome
   for (i = 0; i < 10; i++) {
     p2[i] = le_produto(particao2->f);
     if (p2[i] == NULL) {
-      p2[i] = produto(INT_MAX, "Produto NULL", " ", -1); // se não encontrado, define com INT_MAX o codigo
+      p2[i] = produto(INT_MAX, "Produto NULL", " "); // se não encontrado, define com INT_MAX o codigo
     }
     fseek(particao2->f, i * tam_reg, SEEK_SET);
     particao2->aux_p++;
@@ -760,7 +760,7 @@ void intercala_particoes_produtos(TVetProd *particao, TVetProd *particao2, TNome
         fseek(particao->f, particao->aux_p * tam_reg, SEEK_SET); // salva o proximo cliente do arquivo do ultimo salvo no vetor
         particao->en = le_produto(particao->f);
         if (particao->en == NULL) {
-          particao->en = produto(INT_MAX, "Produto NULL", " ", -1); // se não encontrado, define com INT_MAX o codigo
+          particao->en = produto(INT_MAX, "Produto NULL", " "); // se não encontrado, define com INT_MAX o codigo
         }
         p1[pos_menor] = particao->en; //salva a entidade encontrada no vetor
         aux++; // incrementa ponteiro para referencia da posição no arquivo de saida
@@ -770,7 +770,7 @@ void intercala_particoes_produtos(TVetProd *particao, TVetProd *particao2, TNome
         fseek(particao2->f, particao2->aux_p * tam_reg, SEEK_SET);
         particao2->en = le_produto(particao2->f);
         if (particao2->en == NULL) {
-          particao2->en = produto(INT_MAX, "Produto NULL", " ", -1);
+          particao2->en = produto(INT_MAX, "Produto NULL", " ");
         }
         p2[pos_menor] = particao2->en;
         aux++;

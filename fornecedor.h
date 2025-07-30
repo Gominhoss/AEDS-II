@@ -20,9 +20,13 @@ typedef struct vetor_forn {
   TParticao *particao;
   int aux_p;
   int read;
-
 } TVetForn;
 
+
+typedef struct {
+    int index;     // índice da partição/folha
+    TForn *fornecedor;  // ponteiro para o registro atual da partição
+} TVencedorForn;
 
 void imprime_fornecedor(TForn *forn);
 
@@ -52,18 +56,6 @@ void selection_sort_disco_fornecedor(FILE *arq, int tam);
 
 void embaralhar_arquivo_fornecedor(FILE *arq, int total_records);
 
-void classificacaoSubs_forn(FILE *arq);
-
-void imprime_cod_forn(FILE *in);
-
-void merge_fornecedores(TVetForn **arr, int l, int m, int r); 
-
-void intercalacao_fornecedores(char *nome_arquivo_saida, TNomes *nome_particoes); 
-
-void processa_particoes_fornecedores(TVetForn **v, TNomes *nome_particoes, int num_p, char *out); 
-
-void intercala_particoes_fornecedores(TVetForn *particao,TVetForn *particao2, TNomes *nome_particoes, int index);
-
-void mergeSort_fornecedores(TVetForn **arr, int l, int r);
+int classificacaoSubs_forn(FILE *arq);
 
 #endif // FORNECEDOR_H_INCLUDED

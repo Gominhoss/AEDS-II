@@ -25,6 +25,10 @@ typedef struct vetor {
 
 } TVetClientes;
 
+typedef struct {
+    int index;        // Índice da partição
+    TCliente *cliente;
+} TVencedor;
 
 void imprime_cliente(TCliente *cliente);
 
@@ -55,16 +59,10 @@ void selection_sort_disco_cliente(FILE *arq, int tam);
 
 void embaralhar_arquivo_cliente(FILE *arq, int total_records);
 
-void classificacaoSubs_cli(FILE *arq);
+int classificacaoSubs_cli(FILE *arq);
 
-void imprime_cod_cli(FILE *in);
+int compara_clientes(TCliente *c1, TCliente *c2);
 
-void merge_clientes(TVetClientes **arr, int l, int m, int r);
-
-void intercalacao_clientes(char *nome_arquivo_saida, TNomes *nome_particoes);
-
-void processa_particoes_clientes(TVetClientes **v, TNomes *nome_particoes,int num_p, char *out);
-
-void intercala_particoes_clientes(TVetClientes *particao, TVetClientes *particao2, TNomes *nome_particoes, int index);
+void intercalacao_clientes_vencedores(char *nome_arquivo_saida, int num_p);
 
 #endif // CLIENTE_H_INCLUDED

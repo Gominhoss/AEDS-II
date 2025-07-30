@@ -24,6 +24,11 @@ typedef struct vetor_prod {
 
 } TVetProd;
 
+typedef struct {
+    int index;
+    TProd *produto;
+} TVencedorProduto;
+
 void imprime_produto(TProd *prod);
 
 TProd *produto(int cod, char *nome, char *valor, int cod_forn);
@@ -54,16 +59,10 @@ void embaralhar_arquivo_produto(FILE *arq, int total_records);
 
 void imprime_cod_prod(FILE *in);
 
-void classificacaoSubs_prod(FILE *arq);
+int classificacaoSubs_prod(FILE *arq);
 
-void intercala_particoes_produtos(TVetProd *particao,TVetProd *particao2, TNomes *nome_particoes, int index);
+int compara_produtos(TProd *p1, TProd *p2);
 
-void processa_particoes_produtos(TVetProd **v, TNomes *nome_particoes, int num_p, char *out);
-
-void mergeSort_produtos(TVetProd **arr, int l, int r);
-
-void merge_produtos(TVetProd **arr, int l, int m, int r);
-
-void intercalacao_produtos(char *nome_arquivo_saida, TNomes *nome_particoes);
+void intercalacao_produtos_vencedores(char *nome_arquivo_saida, int num_p);
 
 #endif // PRODUTO_H_INCLUDED

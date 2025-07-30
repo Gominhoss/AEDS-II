@@ -29,6 +29,24 @@ void msg_MENU(char *tipo) {
 }
 
 
+void msg_MENUP(char *tipo) {
+  printf("\n----------- PROGRAMA DE GERENCIAMENTO DE %s -----------\n", tipo);
+  printf("OBS.: Todas as informacoes serao armazenadas em "
+         "arquivos.\n\nOPERACOES DISPONIVEIS:\n");
+  printf("1 - Criar base\n2 - Ordenar\n3 - Imprimir\n4 - Pesquisar "
+         "(Sequencial)\n5 - Pesquisar (Binaria)\n6 - Listar produtos de um fornecedor\n7 - Sair\n");
+  printf("RESPOSTA: ");
+}
+
+void msg_MENUE(char *tipo) {
+  printf("\n----------- PROGRAMA DE GERENCIAMENTO DE %s -----------\n", tipo);
+  printf("OBS.: Todas as informacoes serao armazenadas em "
+         "arquivos.\n\nOPERACOES DISPONIVEIS:\n");
+  printf("1 - Criar base\n2 - Ordenar\n3 - Imprimir\n4 - Pesquisar "
+         "(Sequencial)\n5 - Pesquisar (Binaria)\n6 - Estoques abaixo do mInimo\n7 - Sair\n");
+  printf("RESPOSTA: ");
+}
+
 void menu_funcionario() {
     FILE *out;
     FILE *ordenado = fopen("func_intercalado.dat", "r+");
@@ -285,9 +303,7 @@ void menu_fornecedor() {
     int escolha = -1;
     int cod;
 
-    apaga_particoes_existentes("particoesForn");
-
-    while (escolha != 8) {
+    while (escolha != 6) {
       msg_MENU("FORNECEDORES");
       scanf("%d", &escolha);
       if (escolha == 1) {
@@ -398,9 +414,7 @@ void menu_produto() {
     int escolha = -1;
     int cod;
 
-      apaga_particoes_existentes("particoesProd");
-
-    while (escolha != 8) {
+    while (escolha != 6) {
       msg_MENU("PRODUTO");
       scanf("%d", &escolha);
       if (escolha == 1) {
@@ -470,25 +484,6 @@ void menu_produto() {
           imprime_produto(&prod);
         }
       } else if (escolha == 6) {
-        printf("Criando partições...");
-        classificacaoSubs_prod((out_cli));
-        conjunto_particoes = le_nomes_particoes_diretorio("particoesProd");
-
-      } else if (escolha == 7) {
-        printf("Intercalando particoes...");
-
-        if (lista_vazia(*conjunto_particoes)) {
-          printf("Nao existe particoes para intercalar.\n");
-          break;
-
-        } else {
-          mostrar_particoes(*conjunto_particoes);
-          intercalacao_produtos("prod_intercalado.dat", conjunto_particoes);
-          // intercala_teste_1("clientes_intercalado.dat", conjunto_particoes);
-          flag = 1;
-        }
-
-      } else if (escolha == 8) {
         system("cls");
         break;
 
@@ -508,27 +503,33 @@ void menu_estoque() {
     int flag = 0;
 
   if ((out_cli = fopen(ESTOQUE_FILE, "w+b")) == NULL) {
-    printf("Erro ao abrir arquivo\n");
+    printf("Erro ao abrir arquivo de estoque\n");
     exit(1);
   } else {
     int escolha = -1;
     int cod;
 
-      apaga_particoes_existentes("particoesEstoq");
-
-    while (escolha != 8) {
+    while (escolha != 6) {
       msg_MENU("ESTOQUE");
       scanf("%d", &escolha);
+
       if (escolha == 1) {
-        printf("\nInforme quantos registros tera a base: ");
-        int num;
-        scanf("%d", &num);
-        gerarBaseDesordenada_estoque(out_cli, num);
+        // gerando a base a partir do arquivo de produtos
+        FILE *produtos = fopen(PRODUTOS_FILE, "rb");
+        if (!produtos) {
+          printf("Erro ao abrir arquivo de produtos para gerar estoque\n");
+        } else {
+          gerarBaseDesordenada_estoque(out_cli, produtos);
+          fclose(produtos);
+          printf("Base de estoque gerada a partir dos produtos.\n");
+        }
+
       } else if (escolha == 2) {
-        insertion_sort_disco_estoque(out_cli, tamanho_arquivo_estoque(out_cli));
+        selection_sort_disco_estoque(out_cli, tamanho_arquivo_estoque(out_cli));
         printf("\n-----------------------------Base "
                "ordenada-----------------------");
         le_estoques(out_cli);
+
       } else if (escolha == 3) {
         if (flag) {
           if ((ordenado = fopen("estq_intercalado.dat", "r+")) == NULL) {
@@ -556,14 +557,11 @@ void menu_estoque() {
 
        else if (escolha == 4) {
         printf("\nInforme o codigo a ser buscado: ");
-
         scanf("%d", &cod);
 
-        printf("\n-----------------------------Busca "
-               "sequencial-----------------------");
+        printf("\n-----------------------------Busca sequencial-----------------------\n");
         TEstoque est = busca_sequencial_estoque(cod, out_cli);
         printf("\n");
-
         if (est.cod != cod) {
           printf("Nao foi possivel encontrar o codigo solicitado.\n");
         } else {
@@ -572,50 +570,29 @@ void menu_estoque() {
 
       } else if (escolha == 5) {
         printf("\nInforme o codigo a ser buscado: ");
-
         scanf("%d", &cod);
 
-        printf("\n\n-----------------------------Busca "
-               "binaria-----------------------");
-        TEstoque est = busca_binaria_estoque(cod, out_cli,
-                                             tamanho_arquivo_estoque(out_cli));
+        printf("\n-----------------------------Busca binaria-----------------------\n");
+        TEstoque est = busca_binaria_estoque(cod, out_cli, tamanho_arquivo_estoque(out_cli));
         printf("\n");
         if (est.cod != cod) {
           printf("Nao foi possivel encontrar o codigo solicitado.\n");
         } else {
           imprime_estoque(&est);
         }
+
       } else if (escolha == 6) {
-        printf("Criando partições...");
-        classificacaoSubs_estoq((out_cli));
-        conjunto_particoes = le_nomes_particoes_diretorio("particoesEstoq");
-
-      } else if (escolha == 7) {
-        printf("Intercalando particoes...");
-
-        if (lista_vazia(*conjunto_particoes)) {
-          printf("Nao existe particoes para intercalar.\n");
-          break;
-
-        } else {
-          mostrar_particoes(*conjunto_particoes);
-          intercalacao_estoque("estq_intercalado.dat", conjunto_particoes);
-          // intercala_teste_1("clientes_intercalado.dat", conjunto_particoes);
-          flag = 1;
-        }
-
-      } else if (escolha == 8) {
         system("cls");
         break;
 
       } else {
         printf("\nESCOLHA UMA OPCAO VALIDA!\n");
-        break;
       }
     }
     fclose(out_cli);
   }
 }
+
 
 int main(int argc, char **argv) {
   int option = -1;

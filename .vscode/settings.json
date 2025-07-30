@@ -11,6 +11,7 @@
     "particoes.h": "c",
     "produto.h": "c",
     "stdlib.h": "c"
+    "windows.h": "c"
   },
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",

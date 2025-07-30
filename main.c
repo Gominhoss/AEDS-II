@@ -6,6 +6,7 @@
 #include "produto.c"
 #include "particoes.c"
 #include "utils.c"
+#include "log.c"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -72,7 +73,7 @@ void menu_funcionario() {
                 scanf("%d", &num);
                 gerarBaseDesordenada_funcionario(out, num);
             } else if (escolha == 2) {
-                insertion_sort_disco_funcionario(out, tamanho_arquivo_funcionario(out));
+                selection_sort_disco_funcionario(out, tamanho_arquivo_funcionario(out));
                 printf("\n-----------------------------Base ordenada-----------------------");
                 le_funcionarios(out);
             } else if (escolha == 3) {
@@ -162,7 +163,7 @@ void menu_cliente() {
                 scanf("%d", &num);
                 gerarBaseDesordenada_cliente(out_cli, num);
             } else if (escolha == 2) {
-                insertion_sort_disco_cliente(out_cli, tamanho_arquivo_cliente(out_cli));
+                selection_sort_disco_cliente(out_cli, tamanho_arquivo_cliente(out_cli));
                 printf("\n-----------------------------Base ordenada-----------------------");
                 le_clientes(out_cli);
             } else if (escolha == 3) {
@@ -252,7 +253,7 @@ void menu_fornecedor() {
                 gerarBaseDesordenada_fornecedor(out, num);
 
             } else if (escolha == 2) {
-                insertion_sort_disco_fornecedor(out, tamanho_arquivo_fornecedor(out));
+                selection_sort_disco_fornecedor(out, tamanho_arquivo_fornecedor(out));
                 printf("\n-----------------------------Base ordenada-----------------------\n");
                 le_fornecedores(out);
 
@@ -355,7 +356,7 @@ void menu_produto() {
                 scanf("%d", &num);
                 gerarBaseDesordenada_produto(out_cli, num);
             } else if (escolha == 2) {
-                insertion_sort_disco_produto(out_cli, tamanho_arquivo_produto(out_cli));
+                selection_sort_disco_produto(out_cli, tamanho_arquivo_produto(out_cli));
                 printf("\n-----------------------------Base ordenada-----------------------");
                 le_produtos(out_cli);
             } else if (escolha == 3) {
@@ -451,7 +452,7 @@ void menu_estoque() {
                     printf("Base de estoque gerada a partir dos produtos.\n");
                 }
             } else if (escolha == 2) {
-                insertion_sort_disco_estoque(out_cli, tamanho_arquivo_estoque(out_cli));
+                selection_sort_disco_estoque(out_cli, tamanho_arquivo_estoque(out_cli));
                 printf("\n-----------------------------Base ordenada-----------------------");
                 le_estoques(out_cli);
             } else if (escolha == 3) {

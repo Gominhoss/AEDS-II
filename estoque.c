@@ -1,6 +1,7 @@
 #include "estoque.h"
 #include "produto.h"
 #include "particoes.h"
+#include "log.h"
 #include <math.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -191,6 +192,7 @@ TEstoque busca_binaria_estoque(int cod, FILE *arq, int tam) {
 
   QueryPerformanceFrequency(&frequency);
   QueryPerformanceCounter(&start);
+  
 
   while (left <= right) {
     int middle = (left + right) / 2;
@@ -234,11 +236,20 @@ void insertion_sort_disco_estoque(FILE *arq, int tam) {
     fseek(arq, (i)*tamanho_registro_estoque(), SEEK_SET);
     salva_estoque(fj, arq);
   }
+
   fflush(arq);
 }
 
 void selection_sort_disco_estoque(FILE *arq, int tam) {
-    for (int i = 0; i < tam - 1; i++) {
+  LARGE_INTEGER frequency;
+  LARGE_INTEGER start;
+  LARGE_INTEGER end;
+  double tempoTotal;
+
+  QueryPerformanceFrequency(&frequency);
+  QueryPerformanceCounter(&start);
+
+  for (int i = 0; i < tam - 1; i++) {
         int min_idx = i;
         fseek(arq, i * tamanho_registro_estoque(), SEEK_SET);
         TEstoque *min_estoque = le_estoque(arq);
@@ -270,6 +281,10 @@ void selection_sort_disco_estoque(FILE *arq, int tam) {
         }
         free(min_estoque);
     }
+
+    QueryPerformanceCounter(&end); // Para a contagem
+    tempoTotal = (double) (end.QuadPart - start.QuadPart) / frequency.QuadPart;
+    registrar_tempo_execucao("SelectionSort: ", tempoTotal);
     fflush(arq);
 }
 

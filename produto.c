@@ -1,5 +1,6 @@
 #include "produto.h"
 #include "particoes.h"
+#include "log.h"
 #include <math.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -214,6 +215,8 @@ void insertion_sort_disco_produto(FILE *arq, int tam) {
 }
 
 void selection_sort_disco_produto(FILE *arq, int tam) {
+    iniciar_medicao();
+    
     for (int i = 0; i < tam - 1; i++) {
         int min_idx = i;
         fseek(arq, i * tamanho_registro_produto(), SEEK_SET);
@@ -246,6 +249,10 @@ void selection_sort_disco_produto(FILE *arq, int tam) {
         }
         free(min_produto);
     }
+
+    double tempoTotal = finalizar_medicao();
+    registrar_tempo_execucao("SelectionSort - Produto: ", tempoTotal);
+
     fflush(arq);
 }
 
@@ -379,6 +386,8 @@ void intercalacao_produtos_vencedores(char *nome_arquivo_saida, int num_p) {
     int i;
     int tam_reg = tamanho_registro_produto();
 
+    iniciar_medicao();
+
     // Aloca e inicializa as partições
     for (i = 0; i < num_p; i++) {
         v[i] = malloc(sizeof(TVetProd));
@@ -473,6 +482,9 @@ void intercalacao_produtos_vencedores(char *nome_arquivo_saida, int num_p) {
             }
         }
     }
+
+    double tempoTotal = finalizar_medicao();
+    registrar_tempo_execucao("Intercalacao Vencedores Produto: ", tempoTotal);
 
     // Liberação de memória
     for (i = 0; i < num_p; i++) {

@@ -6,6 +6,7 @@
 #include "particoes.h"
 #include "utils.h"
 #include "produto.h"
+#include "log.h"
 
 #define ESTOQUE_FILE "estoque.dat"
 

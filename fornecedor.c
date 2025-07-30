@@ -1,5 +1,6 @@
 #include "fornecedor.h"
 #include "particoes.h"
+#include "log.h"
 #include <math.h>
 #include <stdarg.h>
 #include <stdlib.h>

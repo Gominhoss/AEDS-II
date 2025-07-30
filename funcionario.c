@@ -1,5 +1,6 @@
 #include "funcionario.h"
 #include "particoes.h"
+#include "log.h"
 #include <math.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -229,6 +230,8 @@ void insertion_sort_disco_funcionario(FILE *arq, int tam) {
 }
 
 void selection_sort_disco_funcionario(FILE *arq, int tam) {
+  iniciar_medicao();
+
     for (int i = 0; i < tam - 1; i++) {
         int min_idx = i;
         fseek(arq, i * tamanho_registro_funcionario(), SEEK_SET);
@@ -261,6 +264,11 @@ void selection_sort_disco_funcionario(FILE *arq, int tam) {
         }
         free(min_func);
     }
+
+    double tempoTotal = finalizar_medicao();
+
+    registrar_tempo_execucao("SelectionSort - Funcionarios: ", tempoTotal);
+
     fflush(arq);
 }
 
@@ -276,50 +284,45 @@ void imprime_cod_func(FILE *in){
 }
 
 int classificacaoSubs_func(FILE *arq) {
-    rewind(arq); //posiciona cursor no inicio do arquivo
-    
-    int nFunc = tamanho_arquivo_funcionario(arq);
-    int qtdParticoes = 0;
-    char nome[40];
-    char numero[3];
-    char extensao[5];
-    int tamVet = 5;
-    TFunc *v[tamVet];
-    TFunc *menor;
-    int congela[nFunc];
-    TFunc *f;
-    int aux = 0, tamPart = 0, posiMenor = 0, proxArq = 5, resIt = 0, auxCong = 0, auxFimArq = 0;
+    rewind(arq); // Volta pro começo do arquivo, pra começar a ler do início
+
+    int nFunc = tamanho_arquivo_funcionario(arq); // Conta quantos funcionários tem no arquivo
+    int qtdParticoes = 0; // Vai contar quantas partições (arquivos menores) foram criadas
+    char nome[40]; // Aqui vamos montar o nome de cada partição
+    int tamVet = 5; // Vamos usar um "buffer" de 5 funcionários na memória
+    TFunc *v[tamVet]; // Vetor pra guardar esses 5 funcionários
+    TFunc *menor; // Aqui vamos guardar o menor funcionário de cada rodada
+    int congela[nFunc]; // Vetor pra marcar quem foi "congelado" (não pode ser usado agora)
+    int aux = 0, tamPart = 0, posiMenor = 0, proxArq = 5, auxCong = 0;
     int i = 0;
     FILE *p;
 
-    //Preenche o vetor inicial
+    // Leitura inicial: pega os 5 primeiros funcionários do arquivo
     while (i < tamVet){
-      fseek(arq, (i) * tamanho_funcionario(), SEEK_SET);
-      v[i] = le_funcionario(arq);
+      fseek(arq, i * tamanho_funcionario(), SEEK_SET); // Vai até o funcionário i
+      v[i] = le_funcionario(arq); // Lê e coloca no vetor
       i++;
     }
 
-    i = 0;
-
-    while (i < tamVet){
-      congela[i] =0;
-      i++;
+    // Inicializa o vetor de congelamento
+    for (i = 0; i < tamVet; i++) {
+      congela[i] = 0; // 0 significa que ainda pode usar
     }
-    i = 0;
 
+    // Enquanto ainda tiver funcionário pra ler ou processar...
     while(proxArq < nFunc || aux < nFunc){
-        while (i < tamVet){
+
+        // Conta quantos funcionários já estão congelados
+        auxCong = 0;
+        for (i = 0; i < tamVet; i++){
             if(congela[i] != 0){
                 auxCong++;
             }
-            i++;
         }
-        i = 0;
+
+        // Se for a primeira vez ou já tem congelados, cria nova partição
         if(proxArq == 5 || auxCong != 0){
-            //Cria partição
-            sprintf(nome, "particoesFunc/particao%d", qtdParticoes);
-            char* fim = ".dat";
-            strcat(nome, fim);
+            sprintf(nome, "particoesFunc/particao%d.dat", qtdParticoes); // Monta nome da partição
             tamPart = 0;
 
             if ((p = fopen(nome, "wb+")) == NULL) {
@@ -327,16 +330,20 @@ int classificacaoSubs_func(FILE *arq) {
             }
         }
 
-        auxCong = 0;
-        while (i < tamVet){
-            congela[i] = -1;
-            i++;
+        // Reinicia congelamento: todos ativos de novo
+        for (i = 0; i < tamVet; i++) {
+            congela[i] = -1; // -1 significa que ainda pode usar
         }
 
+        // Enquanto ainda tiver espaço e gente não congelada...
         while((auxCong < tamVet && proxArq < nFunc) || (auxCong < tamVet && aux < nFunc)){
-            aux++;
-            menor->cod = INT_MAX;
-            posiMenor = nFunc-1;
+            aux++; // Já estamos processando mais um
+
+            menor = (TFunc *) malloc(sizeof(TFunc)); // Prepara espaço pra comparar menor
+            menor->cod = INT_MAX; // Começa assumindo que o menor tem o maior valor possível
+            posiMenor = -1;
+
+            // procura o menor código entre os funcionários do vetor que ainda não estão congelados
             for (int j = 0; j < tamVet; j++) {
                 if (v[j]->cod < menor->cod && congela[j] == -1 && v[j]->cod != -1) {
                     menor = v[j];
@@ -344,42 +351,44 @@ int classificacaoSubs_func(FILE *arq) {
                 }
             }
 
-            //salva o menor elemento na partição
-            fseek(p, (tamPart) * tamanho_funcionario(), SEEK_SET);
+            // Salva esse menor funcionário no arquivo da partição
+            fseek(p, tamPart * tamanho_funcionario(), SEEK_SET);
             salva_funcionario(menor, p);
             tamPart++;
 
-            fseek(arq, (proxArq) * tamanho_funcionario(), SEEK_SET);//pega o proximo elemento
-
-
+            // Lê o próximo funcionário do arquivo principal e coloca no lugar do que saiu
             if(proxArq < nFunc){
+                fseek(arq, proxArq * tamanho_funcionario(), SEEK_SET);
                 v[posiMenor] = le_funcionario(arq);
 
+                // Se esse novo for menor do que o que acabamos de gravar, ele está fora de ordem,
+                // então, é congelado pra próxima partição
                 if (v[posiMenor]->cod < menor->cod){
-                    //verifica se é menor e poe no reservatio
                     congela[posiMenor] = posiMenor;
                     auxCong++;
                 }
             } else {
+                // Se não tiver mais funcionário no arquivo, marca como inválido
                 congela[posiMenor] = posiMenor;
                 auxCong++;
                 v[posiMenor]->cod = -1;
             }
+
             proxArq++;
 
+            // Se todo mundo congelou, é hora de fechar essa partição
             if(auxCong == tamVet){
                 qtdParticoes++;
             }
-
         }
-        imprime_cod_func(p);
-        fclose(p);
+
+        imprime_cod_func(p); // Só imprime pra visualizar (opcional)
+        fclose(p); // Fecha arquivo da partição atual
     }
-    fclose(p);
 
-    return qtdParticoes;
-
+    return qtdParticoes; // Retorna o total de partições criadas
 }
+
 
 int compara_funcionarios(const TFunc *f1, const TFunc *f2) {
     if (f1->cod < f2->cod) return -1;
@@ -394,6 +403,7 @@ void intercalacao_funcionarios_vencedores(char *nome_arquivo_saida, int num_p) {
     int i;
     int tam_reg = tamanho_registro_funcionario();
 
+    iniciar_medicao();
     // Aloca e inicializa as partições
     for (i = 0; i < num_p; i++) {
         v[i] = malloc(sizeof(TVetFunc));
@@ -445,6 +455,8 @@ void intercalacao_funcionarios_vencedores(char *nome_arquivo_saida, int num_p) {
 
     int fim = 0;
     int aux = 0;
+
+    // Enquanto ainda houver funcionários pra salvar
     while (!fim) {
         TFunc *menor = arvore[0].funcionario;
         int ind_vencedor = arvore[0].index;
@@ -480,6 +492,8 @@ void intercalacao_funcionarios_vencedores(char *nome_arquivo_saida, int num_p) {
             }
         }
     }
+    double tempoTotal = finalizar_medicao();
+    registrar_tempo_execucao("Intercalacao Vencedores Funcionarios: ", tempoTotal);
 
     // Libera memórias
     for (i = 0; i < num_p; i++) {

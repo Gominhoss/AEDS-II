@@ -1,5 +1,6 @@
 #include "cliente.h"
 #include "particoes.h"
+#include "log.h"
 #include <math.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -167,6 +168,7 @@ TCliente *busca_binaria_cliente(int cod, FILE *arq, int tam) {
 
   QueryPerformanceFrequency(&frequency);
   QueryPerformanceCounter(&start);
+  
 
   while (left <= right) {
     int middle = (left + right) / 2;
@@ -192,6 +194,14 @@ TCliente *busca_binaria_cliente(int cod, FILE *arq, int tam) {
 
 void insertion_sort_disco_cliente(FILE *arq, int tam) {
   int i;
+  LARGE_INTEGER frequency;
+  LARGE_INTEGER start;
+  LARGE_INTEGER end;
+  double tempoTotal;
+
+  QueryPerformanceFrequency(&frequency);
+  QueryPerformanceCounter(&start);
+  
   for (int j = 2; j <= tam; j++) {
     fseek(arq, (j - 1) * tamanho_registro_cliente(), SEEK_SET);
     TCliente *cli = le_cliente(arq);
@@ -213,6 +223,10 @@ void insertion_sort_disco_cliente(FILE *arq, int tam) {
     // printf("*** Salvando funcionario %d na posicao %d\n", fj->cod, i+1);
     salva_cliente(cli, arq);
   }
+
+  QueryPerformanceCounter(&end); // Para a contagem
+  tempoTotal = (double) (end.QuadPart - start.QuadPart) / frequency.QuadPart;
+  
   fflush(arq);
 }
 

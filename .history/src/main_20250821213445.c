@@ -10,14 +10,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Função para consumir (limpar) caracteres restantes no buffer de entrada,
-// especialmente o '\n' deixado pelo scanf.
-void limpar_buffer() {
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF);
-}
-
-
 // Protótipos dos menus para evitar warnings
 void menu_funcionario();
 void menu_cliente();
@@ -30,7 +22,7 @@ void menu_estoque();
  */
 void msg_MENU_inicial() {
   printf(
-      "\n----------- PROGRAMA DE GERENCIAMENTO DE SUPERMERCADO -----------\n");
+      "\n----------- PROGRAMA DE GERENCIAMENTO DE SUPERMERCADO -----------\\n");
   printf("OBS.: Todas as informacoes serao armazenadas em arquivos.\nBASES "
              "DISPONIVEIS:\n");
   printf("1 - Funcionarios\n2 - Clientes\n3 - Fornecedores\n4 - Produtos\n5 - Estoque\n6 - Sair\n");
@@ -42,7 +34,7 @@ void msg_MENU_inicial() {
  * @param tipo String contendo o nome da entidade (ex: "FUNCIONARIO").
  */
 void msg_MENU(char *tipo) {
-  printf("\n----------- PROGRAMA DE GERENCIAMENTO DE %s -----------\n", tipo);
+  printf("\n----------- PROGRAMA DE GERENCIAMENTO DE %s -----------\\n", tipo);
   printf("OBS.: Todas as informacoes serao armazenadas em "
          "arquivos.\n\nOPERACOES DISPONIVEIS:\n");
   printf("1 - Criar base\n2 - Ordenar\n3 - Imprimir\n4 - Pesquisar "
@@ -54,7 +46,7 @@ void msg_MENU(char *tipo) {
  * @brief Menu de operações para a entidade Estoque.
  */
 void msg_MENUE(char *tipo) {
-  printf("\n----------- PROGRAMA DE GERENCIAMENTO DE %s -----------\n", tipo);
+  printf("\n----------- PROGRAMA DE GERENCIAMENTO DE %s -----------\\n", tipo);
   printf("OBS.: Todas as informacoes serao armazenadas em "
          "arquivos.\n\nOPERACOES DISPONIVEIS:\n");
   printf("1 - Criar base\n2 - Ordenar\n3 - Imprimir\n4 - Pesquisar "
@@ -66,116 +58,64 @@ void msg_MENUE(char *tipo) {
  * @brief Gerencia as operações relacionadas aos funcionários.
  */
 void menu_funcionario() {
-
-    // ==================================================================
-    // 1. ABERTURA DOS ARQUIVOS (MÉTODO ROBUSTO)
-    // ==================================================================
-    FILE *arq_funcionarios;
-    FILE *tabela_hash;
-
-    //Verifica se os arquivos estão disponíveis ou cria novos se necessário.
-    if ((arq_funcionarios = fopen(FUNCIONARIOS_DAT_FILE, "rb+")) == NULL) {
-        printf("Arquivo de dados '%s' nao encontrado. Criando novo arquivo...\n", FUNCIONARIOS_DAT_FILE);
-        if ((arq_funcionarios = fopen(FUNCIONARIOS_DAT_FILE, "wb+")) == NULL) {
-            printf("Erro fatal: Nao foi possivel criar o arquivo de dados.\n");
-            exit(1);
-        }
+    FILE *out;
+    if ((out = fopen(FUNCIONARIOS_FILE, "w+b")) == NULL) {
+        printf("Erro ao abrir arquivo\n");
+        exit(1);
     }
-    if ((tabela_hash = fopen(HASH_FILE, "rb+")) == NULL) {
-        printf("Arquivo de hash '%s' nao encontrado. Criando novo arquivo...\n", HASH_FILE);
-        if ((tabela_hash = fopen(HASH_FILE, "wb+")) == NULL) {
-            printf("Erro fatal: Nao foi possivel criar o arquivo de hash.\n");
-            exit(1);
-        }
-    }
-
-    // ==================================================================
-    // 2. INICIALIZAÇÃO DA HASH
-    // ==================================================================
-    fseek(arq_funcionarios, 0, SEEK_END);
-    if (ftell(arq_funcionarios) == 0) {
-        printf("\nATENCAO: A base de dados de funcionarios esta vazia.\n");
-        printf("Use a opcao '1' para gerar uma nova base de dados antes de continuar.\n");
-    }
-    printf("\nConstruindo a tabela hash...\n");
-    construir_hash_da_base_existente(tabela_hash, arq_funcionarios);
     
-    // ==================================================================
-    // 3. LOOP DO MENU
-    // ==================================================================
     int escolha = -1;
-    int cod, num_registros;
-    TFunc *func;
+    int cod;
 
-    while (escolha != 0) {
-        printf("\n--- MENU DE GERENCIAMENTO DE FUNCIONARIOS (COM HASH) ---\n");
-        printf("1. Gerar Nova Base de Dados (APAGA TUDO)\n");
-        printf("2. Buscar Funcionario por Codigo\n");
-        printf("3. Inserir Novo Funcionario\n");
-        printf("4. Remover Funcionario por Codigo\n");
-        printf("5. Listar Todos os Funcionarios Ativos\n");
-        printf("6. Imprimir Estrutura da Tabela Hash (Debug)\n");
-        printf("0. Voltar ao Menu Principal\n");
-        printf("Escolha uma opcao: ");
-        limpar_buffer();
+    while (escolha != 6) {
+        msg_MENU("FUNCIONARIO");
         scanf("%d", &escolha);
-
         switch (escolha) {
-            case 1: // Gerar Nova Base
-                printf("\nInforme quantos registros tera a nova base: ");
-                scanf("%d", &num_registros);
-                gerarBaseDesordenada_funcionario(arq_funcionarios, num_registros);
-                // ESSENCIAL: Após gerar a base, reconstruir a hash.
-                construir_hash_da_base_existente(tabela_hash, arq_funcionarios);
+            case 1:
+                printf("\nInforme quantos registros tera a base: ");
+                int num;
+                scanf("%d", &num);
+                gerarBaseDesordenada_funcionario(out, num);
                 break;
-
-            case 2: // Buscar com Hash
+            case 2:
+                selection_sort_disco_funcionario(out, tamanho_arquivo_funcionario(out));
+                printf("\n-----------------------------Base ordenada-----------------------\\n");
+                le_funcionarios(out);
+                break;
+            case 3:
+                le_funcionarios(out);
+                break;
+            case 4:
                 printf("\nInforme o codigo a ser buscado: ");
                 scanf("%d", &cod);
-                // A nova busca, muito mais rápida!
-                func = buscar_funcionario_hash(cod, tabela_hash, arq_funcionarios);
-                if (func == NULL) {
-                    printf("Nao foi possivel encontrar o funcionario com o codigo solicitado.\n");
+                TFunc *func1 = busca_sequencial_funcionario(cod, out);
+                if (func1 == NULL) {
+                    printf("Nao foi possivel encontrar o codigo solicitado.\n");
                 } else {
-                    imprime_funcionario(func);
-                    free(func); // Essencial liberar a memória!
+                    imprime_funcionario(func1);
+                    free(func1);
                 }
                 break;
-
-            case 3: // Inserir Novo
-                // Esta é uma nova função que você pode criar adaptando `inserir_novo_cliente_hash`
-                inserir_novo_funcionario_hash(tabela_hash, arq_funcionarios);
-                break;
-
-            case 4: // Remover com Hash
-                printf("\nInforme o codigo do funcionario a ser removido: ");
+            case 5:
+                printf("\nInforme o codigo a ser buscado: ");
                 scanf("%d", &cod);
-                remover_funcionario_hash(cod, tabela_hash, arq_funcionarios);
+                TFunc *func = busca_binaria_funcionario(cod, out, tamanho_arquivo_funcionario(out));
+                if (func == NULL) {
+                    printf("Nao foi possivel encontrar o codigo solicitado.\n");
+                } else {
+                    imprime_funcionario(func);
+                    free(func);
+                }
                 break;
-
-            case 5: // Listar Todos
-                le_funcionarios(arq_funcionarios);
-                break;
-            
-            case 6: // Imprimir Hash (para ver como está a estrutura)
-                imprimir_tabela_hash_completa(tabela_hash, arq_funcionarios);
-                break;
-
-            case 0: // Sair
+            case 6:
                 system("cls");
                 break;
-
             default:
                 printf("\nESCOLHA UMA OPCAO VALIDA!\n");
                 break;
         }
     }
-
-    // ==================================================================
-    // 4. FECHAMENTO DOS ARQUIVOS
-    // ==================================================================
-    fclose(arq_funcionarios);
-    fclose(tabela_hash);
+    fclose(out);
 }
 
 /**

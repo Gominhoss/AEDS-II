@@ -23,7 +23,7 @@ void imprime_funcionario(TFunc *func) {
   printf("%s", func->nome);
   printf("\nCPF: ");
   printf("%s", func->cpf);
-  printf("\nData de Nascimento: "); 
+  printf("\nData de Nascimento: ");
   printf("%s", func->data_nascimento);
   printf("\nSalario: ");
   printf("%.2f", func->salario);
@@ -41,11 +41,6 @@ TFunc *funcionario(int cod, char *nome, char *cpf, char *data_nascimento,
   strcpy(func->cpf, cpf);
   strcpy(func->data_nascimento, data_nascimento);
   func->salario = salario;
-
-  // Inicializa os novos campos para a tabela hash
-  func->ocupado = 1; // Sempre nasce como ocupado
-  func->prox = -1;   // Por padrão, não aponta para ninguém
-
   return func;
 }
 
@@ -57,11 +52,6 @@ void salva_funcionario(TFunc *func, FILE *out) {
   fwrite(func->data_nascimento, sizeof(char), sizeof(func->data_nascimento),
          out);
   fwrite(&func->salario, sizeof(double), 1, out);
-
-  // Salva os novos campos para a tabela hash
-  fwrite(&func->ocupado, sizeof(int), 1, out);
-  fwrite(&func->prox, sizeof(int), 1, out);
-
 }
 
 // Lê os dados de um funcionário de um arquivo
@@ -75,25 +65,18 @@ TFunc *le_funcionario(FILE *in) {
   fread(func->cpf, sizeof(char), sizeof(func->cpf), in);
   fread(func->data_nascimento, sizeof(char), sizeof(func->data_nascimento), in);
   fread(&func->salario, sizeof(double), 1, in);
-
-  // Lê os novos campos para a tabela hash
-  fread(&func->ocupado, sizeof(int), 1, in);
-  fread(&func->prox, sizeof(int), 1, in);
-
   return func;
 }
 
 // Lê e imprime todos os funcionários de um arquivo
 void le_funcionarios(FILE *in) {
-    printf("\n\nLendo funcionarios do arquivo...\n\n");
-    rewind(in);
-    TFunc *f;
-    while ((f = le_funcionario(in)) != NULL) {
-        if (f->ocupado == 1) { // Só imprime se não estiver logicamente removido
-            imprime_funcionario(f);
-        }
-        free(f);
-    }
+  printf("\n\nLendo funcionarios do arquivo...\n\n");
+  rewind(in);
+  TFunc *f;
+  while ((f = le_funcionario(in)) != NULL) {
+    imprime_funcionario(f);
+    free(f);
+  }
 }
 
 // Retorna o tamanho da struct TFunc em bytes
@@ -147,18 +130,14 @@ void gerarBaseDesordenada_funcionario(FILE *file, int numberRecords) {
   for (int i = 0; i < numberRecords; i++) {
         TFunc func;
         func.cod = i + 1;
-        sprintf(func.nome, "Funcionario %d", func.cod);
-        sprintf(func.cpf, "111.111.111-11");
-        sprintf(func.data_nascimento, "01/01/2000");
+        snprintf(func.nome, "Funcionario %d", func.cod);
+        snprintf(func.cpf, "111.111.111-11");
+        snprintf(func.data_nascimento, "01/01/2000");
         func.salario = 1000.2 * (i + 1);
-        // INICIALIZAÇÃO DOS NOVOS CAMPOS
-        func.ocupado = 1;
-        func.prox = -1;
         salva_funcionario(&func, file);
   }
 
   embaralhar_arquivo_funcionario(file, numberRecords);
-  printf("Base de dados de funcionarios gerada e embaralhada com sucesso.\n");
 }
 
 // Busca um funcionário por código usando busca sequencial

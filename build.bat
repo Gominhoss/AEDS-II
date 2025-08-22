@@ -17,7 +17,7 @@ REM Define o nome do executavel de saida
 set EXECUTABLE_NAME=main.exe
 
 REM Lista de todos os arquivos .c a serem compilados
-set SOURCES=%SRC_DIR%\cliente.c %SRC_DIR%\estoque.c %SRC_DIR%\fornecedor.c %SRC_DIR%\funcionario.c %SRC_DIR%\log.c %SRC_DIR%\main.c %SRC_DIR%\produto.c %SRC_DIR%\utils.c
+set SOURCES=%SRC_DIR%\hash.c %SRC_DIR%\cliente.c %SRC_DIR%\estoque.c %SRC_DIR%\fornecedor.c %SRC_DIR%\funcionario.c %SRC_DIR%\log.c %SRC_DIR%\main.c %SRC_DIR%\produto.c %SRC_DIR%\utils.c
 
 REM Comando de compilacao
 echo Compilando o projeto...

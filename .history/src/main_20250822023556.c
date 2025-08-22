@@ -10,14 +10,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Função para consumir (limpar) caracteres restantes no buffer de entrada,
-// especialmente o '\n' deixado pelo scanf.
-void limpar_buffer() {
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF);
-}
-
-
 // Protótipos dos menus para evitar warnings
 void menu_funcionario();
 void menu_cliente();
@@ -97,7 +89,6 @@ void menu_funcionario() {
         printf("\nATENCAO: A base de dados de funcionarios esta vazia.\n");
         printf("Use a opcao '1' para gerar uma nova base de dados antes de continuar.\n");
     }
-    printf("\nConstruindo a tabela hash...\n");
     construir_hash_da_base_existente(tabela_hash, arq_funcionarios);
     
     // ==================================================================
@@ -117,7 +108,6 @@ void menu_funcionario() {
         printf("6. Imprimir Estrutura da Tabela Hash (Debug)\n");
         printf("0. Voltar ao Menu Principal\n");
         printf("Escolha uma opcao: ");
-        limpar_buffer();
         scanf("%d", &escolha);
 
         switch (escolha) {

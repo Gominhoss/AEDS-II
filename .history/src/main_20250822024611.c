@@ -97,7 +97,6 @@ void menu_funcionario() {
         printf("\nATENCAO: A base de dados de funcionarios esta vazia.\n");
         printf("Use a opcao '1' para gerar uma nova base de dados antes de continuar.\n");
     }
-    printf("\nConstruindo a tabela hash...\n");
     construir_hash_da_base_existente(tabela_hash, arq_funcionarios);
     
     // ==================================================================
